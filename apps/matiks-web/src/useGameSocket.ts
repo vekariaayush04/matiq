@@ -59,7 +59,7 @@ export function useGameSocket(name: string) {
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return
 
-    const ws = new WebSocket(`ws://${location.host}/ws`)
+    const ws = new WebSocket(`ws://${import.meta.env.API_BASE_URL}/ws`)
 
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: EVENT_TYPES.JOIN, name }))
