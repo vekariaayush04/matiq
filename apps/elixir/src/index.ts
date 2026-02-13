@@ -81,8 +81,6 @@ app.get(
                 });
 
                 games = games.filter(g => g.gameId !== gameId);
-                game.ws1.close(1000, "game closed");
-                game.ws2?.close(1000, "game closed");
                 break;
               }
 

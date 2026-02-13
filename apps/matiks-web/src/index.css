@@ -1,24 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0d0d0d;
+  --color-surface: #1a1a1a;
+  --color-surface-hover: #242424;
+  --color-fg: #f5f5f5;
+  --color-fg-dim: #888;
+  --color-win: #4ade80;
+  --color-lose: #f87171;
+  --color-win-glow: rgba(74, 222, 128, 0.4);
+  --color-lose-glow: rgba(248, 113, 113, 0.4);
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --animate-spin: spin 0.8s linear infinite;
+  --animate-pulse: pulse 1s ease-in-out infinite;
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+  --animate-slide-up: slideUp 0.5s ease-out forwards;
+  --animate-shake: shake 0.4s ease-out;
+  --animate-scale-in: scaleIn 0.2s ease-out;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-:root {
-  --bg: #0a0a0a;
-  --fg: #ededed;
-  --dim: #666;
-  --accent: #3b82f6;
-  --win: #22c55e;
-  --lose: #ef4444;
-  --font: system-ui, -apple-system, sans-serif;
-}
-
 body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--fg);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Subtle gradient mesh */
+  background-image:
+    radial-gradient(ellipse at 20% 20%, rgba(74, 222, 128, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(248, 113, 113, 0.08) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 #root {
@@ -31,19 +87,97 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2rem;
   padding: 1.5rem;
-  gap: 1.5rem;
 }
 
+.logo {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  text-transform: lowercase;
+  animation: var(--animate-fade-in);
+}
+
+input[type="text"],
+input[type="number"] {
+  background: var(--color-surface);
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  font-size: 1.125rem;
+  color: var(--color-fg);
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input:focus {
+  border-color: var(--color-fg);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), 0 0 30px rgba(255, 255, 255, 0.1);
+  background: var(--color-surface-hover);
+}
+
+input::placeholder {
+  color: var(--color-fg-dim);
+}
+
+button {
+  background: var(--color-fg);
+  color: var(--color-bg);
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 255, 255, 0.25);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Waiting */
+.loader {
+  width: 44px;
+  height: 44px;
+  border: 2px solid #333;
+  border-top-color: var(--color-fg);
+  border-radius: 50%;
+  animation: var(--animate-spin);
+}
+
+.waiting p {
+  color: var(--color-fg-dim);
+  font-size: 0.9375rem;
+  animation: var(--animate-fade-in);
+}
+
+/* Ready/Countdown */
 .ready {
-  gap: 2rem;
+  gap: 3rem;
 }
 
 .matchup {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 1.5rem;
+  gap: 1.5rem;
+  font-size: 1.25rem;
+  animation: var(--animate-slide-up);
 }
 
 .player {
@@ -51,83 +185,32 @@ body {
 }
 
 .vs {
-  color: var(--dim);
-  font-size: 1rem;
+  color: var(--color-fg-dim);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
 }
 
 .countdown {
-  font-size: 1.5rem;
-  color: var(--accent);
-  font-weight: 600;
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  animation: var(--animate-scale-in) 0.5s ease-out;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
 }
 
-.logo {
-  font-size: 3rem;
-  font-weight: 700;
-  letter-spacing: -0.05em;
-}
-
-input[type="text"],
-input[type="number"] {
-  background: transparent;
-  border: 2px solid var(--dim);
-  border-radius: 0.5rem;
-  padding: 1rem 1.5rem;
-  font-size: 1.25rem;
-  color: var(--fg);
-  width: 100%;
-  max-width: 280px;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-input:focus {
-  border-color: var(--accent);
-}
-
-input::placeholder {
-  color: var(--dim);
-}
-
-button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 1rem 2.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover:not(:disabled) {
-  background: var(--accent-hover);
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.loader {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--dim);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
+/* Playing */
+.playing {
+  gap: 1.5rem;
 }
 
 .header {
   display: flex;
-  gap: 3rem;
-  margin-bottom: 3rem;
+  align-items: center;
+  gap: clamp(1.5rem, 5vw, 3rem);
+  animation: var(--animate-slide-up);
 }
 
 .score {
@@ -138,95 +221,182 @@ button:disabled {
 }
 
 .score .label {
-  font-size: 0.875rem;
-  color: var(--dim);
+  font-size: 0.7rem;
+  color: var(--color-fg-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 600;
 }
 
 .score .value {
-  font-size: 2.5rem;
-  font-weight: 700;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  transition: all 0.3s ease;
 }
 
-.timer-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
+.score .value.updated {
+  transform: scale(1.2);
+  color: var(--color-win);
+}
+
+/* Circular Timer */
+.timer-ring {
+  position: relative;
+  width: 70px;
+  height: 70px;
+}
+
+.timer-ring svg {
+  transform: rotate(-90deg);
+}
+
+.timer-ring circle {
+  fill: none;
+  stroke-width: 4;
+}
+
+.timer-ring .bg {
+  stroke: #333;
+}
+
+.timer-ring .progress {
+  stroke: var(--color-fg);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.1s linear;
 }
 
 .timer-value {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.timer-display {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
-  font-size: 1rem;
-  color: var(--dim);
-}
-
-.question {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
-}
-
-.operands {
-  font-size: 5rem;
+  justify-content: center;
+  font-size: 0.875rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
+/* Question */
+.question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  animation: var(--animate-scale-in);
+}
+
+.operands {
+  font-size: clamp(3.5rem, 12vw, 6rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
 .question form {
   width: 100%;
-  max-width: 200px;
+  max-width: 180px;
 }
 
 .question input {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;
   text-align: center;
+  padding: 0.875rem 1rem;
+  border-radius: 12px;
+  animation: var(--animate-scale-in);
 }
 
 .question input.correct {
-  border-color: var(--win);
-  color: var(--win);
+  border-color: var(--color-win);
+  color: var(--color-win);
+  box-shadow: 0 0 25px var(--color-win-glow), inset 0 0 20px rgba(74, 222, 128, 0.1);
+  background: rgba(74, 222, 128, 0.05);
 }
 
 .question input.wrong {
-  border-color: var(--lose);
-  color: var(--lose);
+  border-color: var(--color-lose);
+  color: var(--color-lose);
+  box-shadow: 0 0 25px var(--color-lose-glow);
+  animation: var(--animate-shake);
+}
+
+/* Progress */
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  animation: var(--animate-fade-in);
+}
+
+.progress-bar {
+  width: 120px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--color-fg);
+  border-radius: 2px;
+  transition: width 0.3s ease;
 }
 
 .progress {
-  margin-top: 2rem;
-  color: var(--dim);
-  font-size: 0.875rem;
+  color: var(--color-fg-dim);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Result */
+.ended {
+  gap: 2rem;
 }
 
 .result {
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  animation: var(--animate-scale-in);
 }
 
 .outcome {
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
+  font-size: clamp(3rem, 10vw, 5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .outcome.win {
-  color: var(--win);
+  color: var(--color-win);
+  text-shadow: 0 0 60px var(--color-win-glow);
 }
 
 .outcome.lose {
-  color: var(--lose);
+  color: var(--color-lose);
+  text-shadow: 0 0 60px var(--color-lose-glow);
 }
 
 .final-score {
-  font-size: 1.5rem;
-  color: var(--dim);
-  margin-bottom: 2rem;
+  font-size: 1.25rem;
+  color: var(--color-fg-dim);
+  font-weight: 500;
+  letter-spacing: 0.1em;
 }
+
+/* Screen transitions */
+.screen > * {
+  animation-fill-mode: both;
+}
+
+.screen > *:nth-child(1) { animation-delay: 0.05s; }
+.screen > *:nth-child(2) { animation-delay: 0.1s; }
+.screen > *:nth-child(3) { animation-delay: 0.15s; }
+.screen > *:nth-child(4) { animation-delay: 0.2s; }
+.screen > *:nth-child(5) { animation-delay: 0.25s; }
