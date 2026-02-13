@@ -63,6 +63,17 @@
   box-sizing: border-box;
 }
 
+/* Mobile touch improvements */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-fg);
