@@ -1,0 +1,232 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0a0a0a;
+  --fg: #ededed;
+  --dim: #666;
+  --accent: #3b82f6;
+  --win: #22c55e;
+  --lose: #ef4444;
+  --font: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.screen {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  gap: 1.5rem;
+}
+
+.ready {
+  gap: 2rem;
+}
+
+.matchup {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.5rem;
+}
+
+.player {
+  font-weight: 600;
+}
+
+.vs {
+  color: var(--dim);
+  font-size: 1rem;
+}
+
+.countdown {
+  font-size: 1.5rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.logo {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+}
+
+input[type="text"],
+input[type="number"] {
+  background: transparent;
+  border: 2px solid var(--dim);
+  border-radius: 0.5rem;
+  padding: 1rem 1.5rem;
+  font-size: 1.25rem;
+  color: var(--fg);
+  width: 100%;
+  max-width: 280px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input:focus {
+  border-color: var(--accent);
+}
+
+input::placeholder {
+  color: var(--dim);
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+  padding: 1rem 2.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--dim);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.header {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.score .label {
+  font-size: 0.875rem;
+  color: var(--dim);
+}
+
+.score .value {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+
+.timer-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.timer-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.timer-display {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: var(--dim);
+}
+
+.question {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.operands {
+  font-size: 5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.question form {
+  width: 100%;
+  max-width: 200px;
+}
+
+.question input {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.question input.correct {
+  border-color: var(--win);
+  color: var(--win);
+}
+
+.question input.wrong {
+  border-color: var(--lose);
+  color: var(--lose);
+}
+
+.progress {
+  margin-top: 2rem;
+  color: var(--dim);
+  font-size: 0.875rem;
+}
+
+.result {
+  text-align: center;
+}
+
+.outcome {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.outcome.win {
+  color: var(--win);
+}
+
+.outcome.lose {
+  color: var(--lose);
+}
+
+.final-score {
+  font-size: 1.5rem;
+  color: var(--dim);
+  margin-bottom: 2rem;
+}
