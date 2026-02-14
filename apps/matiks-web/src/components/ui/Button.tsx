@@ -1,51 +1,35 @@
-/**
- * Button Component
- * Reusable button with consistent styling and hover effects
- */
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
 
-import { ReactNode, ButtonHTMLAttributes } from 'react'
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-card-border bg-transparent hover:bg-secondary",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-secondary",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-11 px-6 py-2",
+        sm: "h-9 rounded-lg px-4 text-xs",
+        lg: "h-12 rounded-xl px-8 text-base",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: { variant: "default", size: "default" },
+  }
+)
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Button content */
-  children: ReactNode
-  /** Whether the button is disabled */
-  disabled?: boolean
-  /** Optional CSS classes */
-  className?: string
-}
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {}
 
-/**
- * Primary button styled for the game UI
- * Features lift effect and shadow on hover
- */
-export const Button = ({
-  children,
-  disabled = false,
-  className = '',
-  ...props
-}: ButtonProps) => {
-  return (
-    <button
-      className={`
-        bg-fg text-bg
-        px-10 py-4
-        text-base font-semibold
-        rounded-xl
-        cursor-pointer
-        transition-all
-        hover:-translate-y-0.5
-        hover:shadow-[0_8px_30px_rgba(255,255,255,0.25)]
-        active:translate-y-0
-        disabled:opacity-40
-        disabled:cursor-not-allowed
-        ${className}
-      `}
-      disabled={disabled}
-      {...props}
-    >
-      {children}
-    </button>
-  )
-}
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, ...props }, ref) => {
+  return <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+})
+Button.displayName = "Button"
 
-export default Button
+export { Button, buttonVariants }

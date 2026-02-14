@@ -13,7 +13,8 @@ matiks/
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── Logo.tsx
 │   │   │   │   ├── Button.tsx
-│   │   │   │   └── Input.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   └── AuthHeader.tsx
 │   │   │   ├── game/       # Game-specific components
 │   │   │   │   ├── index.ts
 │   │   │   │   ├── CircularTimer.tsx
@@ -22,15 +23,20 @@ matiks/
 │   │   │   │   └── ScoreBoard.tsx
 │   │   │   └── screens/    # Full-screen views
 │   │   │       ├── index.ts
+│   │   │       ├── AuthScreen.tsx
 │   │   │       ├── IdleScreen.tsx
 │   │   │       ├── WaitingScreen.tsx
 │   │   │       ├── ReadyScreen.tsx
 │   │   │       ├── PlayingScreen.tsx
 │   │   │       └── EndedScreen.tsx
+│   │   ├── context/        # React Context
+│   │   │   └── AuthContext.tsx
 │   │   ├── hooks/          # Custom React hooks
 │   │   │   ├── index.ts
 │   │   │   ├── useGameSocket.ts
 │   │   │   └── useTimer.ts
+│   │   ├── lib/            # Auth client & utilities
+│   │   │   └── auth.ts     # Better Auth client
 │   │   ├── utils/         # Utility functions
 │   │   │   └── index.ts
 │   │   ├── types/         # TypeScript types
@@ -46,6 +52,9 @@ matiks/
 └── elixir/               # Backend (Hono + Bun + WebSocket)
     ├── src/
     │   ├── index.ts       # Main server entry point
+    │   ├── auth.ts        # Better Auth configuration
+    │   ├── db/            # Drizzle ORM
+    │   ├── routes/        # Auth API routes
     │   ├── game/
     │   │   └── game.ts   # Game class with core logic
     │   ├── Question/
@@ -59,22 +68,25 @@ matiks/
 ## Tech Stack
 
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS v4
-- **Backend:** Hono, Bun, WebSocket
+- **Backend:** Hono, Bun, WebSocket, Better Auth
+- **Database:** PostgreSQL with Drizzle ORM
 - **Communication:** JSON over WebSocket
+- **Auth:** Email/password + Google OAuth
 
 ## Game Flow
 
 ```
-1. Player enters name
-2. Connect to WebSocket server
-3. Server matches two players ( matchmaking)
-4. Both players receive GAME_STARTED with questions
-5. Countdown timer (5 seconds)
-6. Game timer starts (60 seconds)
-7. Players answer questions by typing the result
-8. First to more correct answers wins
-9. Game ends, show results
-10. Click "Play Again" to restart
+1. Player signs up or logs in
+2. Player enters display name
+3. Connect to WebSocket server
+4. Server matches two players (matchmaking)
+5. Both players receive GAME_STARTED with questions
+6. Countdown timer (5 seconds)
+7. Game timer starts (60 seconds)
+8. Players answer questions by typing the result
+9. First to more correct answers wins
+10. Game ends, show results
+11. Click "Play Again" to restart
 ```
 
 ## Game States
@@ -91,6 +103,22 @@ matiks/
 ### Prerequisites
 - Node.js / Bun
 - npm or bun package manager
+- PostgreSQL (for authentication)
+
+### Setup
+
+1. **Configure backend environment:**
+   ```bash
+   cp ../elixir/.env.example ../elixir/.env
+   # Edit .env with your database URL and auth secrets
+   ```
+
+2. **Set up database:**
+   ```bash
+   cd ../elixir
+   bun install
+   bun run db:push
+   ```
 
 ### Backend (elixir)
 ```bash
@@ -110,6 +138,19 @@ npm run dev  # Runs on http://localhost:5173
 
 ### Frontend
 
+**`context/AuthContext.tsx`**
+- React context for authentication state
+- Provides `useAuth` hook for session management
+- Wraps app with AuthProvider
+
+**`lib/auth.ts`**
+- Better Auth client configuration
+- Exports: `signIn`, `signUp`, `signOut`, `useSession`
+
+**`components/screens/AuthScreen.tsx`**
+- Login/signup screen
+- Email/password and Google OAuth options
+
 **`hooks/useGameSocket.ts`**
 - Manages WebSocket connection and game state
 - Exports: `connect`, `updateScore`, `disconnect`, `reset`
@@ -121,11 +162,15 @@ npm run dev  # Runs on http://localhost:5173
 - Uses requestAnimationFrame for smooth updates
 
 **`components/screens/`**
+- `AuthScreen.tsx` - Login/signup screen
 - `IdleScreen.tsx` - Entry screen with name input
 - `WaitingScreen.tsx` - Matchmaking spinner
 - `ReadyScreen.tsx` - Pre-game countdown with matchup
 - `PlayingScreen.tsx` - Main game UI
 - `EndedScreen.tsx` - Results screen
+
+**`components/ui/AuthHeader.tsx`**
+- Header component with user info and logout button
 
 **`components/game/`**
 - `CircularTimer.tsx` - SVG countdown ring
@@ -160,6 +205,26 @@ npm run dev  # Runs on http://localhost:5173
 - Handles game events (JOIN, UPDATE)
 
 ## Adding New Features
+
+### Adding a New Auth Provider
+
+1. **Backend:** Add provider config in `auth.ts`
+2. **Frontend:** Add provider button in `AuthScreen.tsx`
+
+Example for adding GitHub OAuth:
+
+```typescript
+// Backend - apps/elixir/src/auth.ts
+socialProviders: {
+  github: {
+    clientId: process.env.GITHUB_CLIENT_ID || '',
+    clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+  },
+}
+
+// Frontend - AuthScreen.tsx
+<button onClick={() => signIn('github')}>Sign in with GitHub</button>
+```
 
 ### Adding a New Game Event
 

@@ -1,6 +1,5 @@
 /**
  * CircularTimer Component
- * Displays countdown as a shrinking ring with numeric display
  */
 
 import { useMemo } from 'react'
@@ -8,72 +7,43 @@ import { GAME_DURATION_SECONDS } from '../../constants'
 import { getTimerProgress, getCircleOffset } from '../../utils'
 
 interface CircularTimerProps {
-  /** Current seconds remaining */
   timeLeft: number | null
-  /** Optional custom duration (defaults to GAME_DURATION_SECONDS) */
   duration?: number
-  /** Optional CSS classes */
-  className?: string
 }
 
-/**
- * SVG-based circular countdown timer
- * Ring shrinks as time decreases
- */
 export const CircularTimer = ({
   timeLeft,
   duration = GAME_DURATION_SECONDS,
-  className = '',
 }: CircularTimerProps) => {
-  const radius = 28
-  const circumference = useMemo(
-    () => 2 * Math.PI * radius,
-    []
-  )
-  const progress = useMemo(
-    () => getTimerProgress(timeLeft, duration),
-    [timeLeft, duration]
-  )
-  const strokeDashoffset = useMemo(
-    () => getCircleOffset(progress, radius),
-    [progress, radius]
-  )
+  const radius = 20
+  const circumference = useMemo(() => 2 * Math.PI * radius, [])
+  const progress = useMemo(() => getTimerProgress(timeLeft, duration), [timeLeft, duration])
+  const strokeDashoffset = useMemo(() => getCircleOffset(progress, radius), [progress, radius])
+
+  const isCritical = timeLeft !== null && timeLeft <= 30
+  const isWarning = timeLeft !== null && timeLeft <= 60
+
+  const color = timeLeft === null ? '#a1a1aa' : isCritical ? '#f43f5e' : isWarning ? '#f97316' : '#fafafa'
+  const trackColor = timeLeft === null ? '#27272a' : isCritical ? 'rgba(244, 63, 94, 0.2)' : isWarning ? 'rgba(249, 115, 22, 0.2)' : 'rgba(250, 250, 250, 0.1)'
+
+  const formatTime = (seconds: number | null) => {
+    if (seconds === null) return '--'
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, '0')}`
+  }
 
   return (
-    <div className={`relative w-[70px] h-[70px] ${className}`}>
-      <svg
-        width="70"
-        height="70"
-        viewBox="0 0 70 70"
-        className="transform -rotate-90"
-      >
-        {/* Background ring */}
-        <circle
-          cx="35"
-          cy="35"
-          r={radius}
-          fill="none"
-          stroke="#333"
-          strokeWidth="4"
-        />
-        {/* Progress ring */}
-        <circle
-          cx="35"
-          cy={35}
-          r={radius}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          className="text-fg transition-all duration-75"
-        />
-      </svg>
-      {/* Numeric display */}
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold tabular-nums">
-        {timeLeft ?? '--'}
-      </span>
+    <div className="flex flex-col items-center">
+      <div className={`text-2xl font-bold tabular-nums ${isCritical ? 'text-[#f43f5e]' : isWarning ? 'text-[#f97316]' : ''}`}>
+        {formatTime(timeLeft)}
+      </div>
+      <div className="relative mt-1">
+        <svg width="50" height="50" viewBox="0 0 50 50" className="-rotate-90">
+          <circle cx="25" cy="25" r={radius} fill="none" stroke={trackColor} strokeWidth="2.5" />
+          <circle cx="25" cy="25" r={radius} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} />
+        </svg>
+      </div>
     </div>
   )
 }

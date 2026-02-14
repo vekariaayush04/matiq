@@ -4,12 +4,19 @@ import { cors } from 'hono/cors'
 import { upgradeWebSocket, websocket } from 'hono/bun'
 import {eventNameTypes} from "./enums/eventNameTypes";
 import {Game} from "./game/game";
+import authRoutes from "./routes/auth";
 
 const app = new Hono()
 
 //all middlewares
 app.use(logger())
-app.use('/api/v1/*', cors())
+app.use('/api/*', cors({
+  origin: ['http://localhost:5173'],
+  credentials: true,
+}))
+
+// Mount auth routes
+app.route('/', authRoutes)
 
 app.get('/health', (c) => {
   return c.json({

@@ -28,7 +28,7 @@ interface UseGameSocketReturn extends GameState {
  * Manages WebSocket connection for real-time gameplay
  * Handles connection, state updates, and cleanup
  */
-export const useGameSocket = (playerName: string): UseGameSocketReturn => {
+export const useGameSocket = (playerName: string, userId?: string): UseGameSocketReturn => {
   const [state, setState] = useState<GameState>({ status: 'idle' })
   const wsRef = useRef<WebSocket | null>(null)
   const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -43,8 +43,12 @@ export const useGameSocket = (playerName: string): UseGameSocketReturn => {
     const ws = new WebSocket(`ws://localhost:3000/ws`)
 
     ws.onopen = () => {
-      // Join matchmaking queue
-      ws.send(JSON.stringify({ type: EVENT_TYPES.JOIN, name: playerName }))
+      // Join matchmaking queue with user info
+      ws.send(JSON.stringify({
+        type: EVENT_TYPES.JOIN,
+        name: playerName,
+        userId: userId || null,
+      }))
     }
 
     ws.onmessage = (event) => {
@@ -152,12 +156,16 @@ export const useGameSocket = (playerName: string): UseGameSocketReturn => {
   const reset = useCallback(() => {
     // Send JOIN to start new game
     if (wsRef.current?.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify({ type: EVENT_TYPES.JOIN, name: playerName }))
+      wsRef.current.send(JSON.stringify({
+        type: EVENT_TYPES.JOIN,
+        name: playerName,
+        userId: userId || null,
+      }))
     } else {
       // Reconnect if needed
       connect()
     }
-  }, [playerName, connect])
+  }, [playerName, userId, connect])
 
   /**
    * Cleanup on unmount

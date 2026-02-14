@@ -6,3 +6,5 @@
 export { Logo } from './Logo'
 export { Button } from './Button'
 export { Input } from './Input'
+export { AuthHeader } from './AuthHeader'
+export { Numpad } from './Numpad'

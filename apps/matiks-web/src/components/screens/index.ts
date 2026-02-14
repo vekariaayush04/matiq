@@ -3,6 +3,7 @@
  * Full-screen views for each game state
  */
 
+export { AuthScreen } from './AuthScreen'
 export { IdleScreen } from './IdleScreen'
 export { WaitingScreen } from './WaitingScreen'
 export { ReadyScreen } from './ReadyScreen'

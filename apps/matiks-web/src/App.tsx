@@ -5,21 +5,26 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import {
+  AuthScreen,
   IdleScreen,
   WaitingScreen,
   ReadyScreen,
   PlayingScreen,
   EndedScreen,
 } from './components/screens'
+import { AuthHeader } from './components/ui'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { useGameSocket, useTimer } from './hooks'
 import { ANSWER_DEBOUNCE_MS, SCORE_ANIMATION_MS } from './constants'
 
-function App() {
-  // Player state
+function AppContent() {
+  const { session, isLoading } = useAuth()
+
+  // Player state - use session name if available
   const [name, setName] = useState('')
 
   // WebSocket and game state
-  const gameState = useGameSocket(name)
+  const gameState = useGameSocket(name, session?.user?.id)
   const {
     status,
     opponent,
@@ -51,6 +56,13 @@ function App() {
     status,
     onGameEnd: () => updateScore(false),
   })
+
+  // Set name from session on load
+  useEffect(() => {
+    if (session?.user?.name && !name) {
+      setName(session.user.name)
+    }
+  }, [session, name])
 
   /**
    * Reset local state when new game starts
@@ -134,14 +146,43 @@ function App() {
   }, [gamePhase, questions, currentQIndex, updateScore, moveToNextQuestion])
 
   /**
+   * Handle auth success - start playing
+   */
+  const handleAuthSuccess = useCallback(() => {
+    if (session?.user?.name) {
+      setName(session.user.name)
+    }
+  }, [session])
+
+  /**
    * Render appropriate screen based on game state
    */
-  const renderScreen = () => {
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <>
+        <AuthHeader>
+          <div className="flex-1" />
+        </AuthHeader>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-2 border-fg border-t-transparent rounded-full" />
+        </div>
+      </>
+    )
+  }
+
+  // Show auth screen if not logged in
+  if (!session) {
+    return <AuthScreen onAuthSuccess={handleAuthSuccess} />
+  }
+
+  // Render game screens based on status
+  const renderGameScreen = () => {
     switch (status) {
       case 'idle':
         return (
           <IdleScreen
-            name={name}
+            name={session.user.name || name}
             onNameChange={setName}
             onPlay={connect}
           />
@@ -157,7 +198,7 @@ function App() {
         if (gamePhase === 'waiting') {
           return (
             <ReadyScreen
-              playerName={name}
+              playerName={session.user.name || name}
               opponentName={opponent ?? ''}
               countDown={timeLeft}
             />
@@ -170,7 +211,7 @@ function App() {
 
         return (
           <PlayingScreen
-            playerName={name}
+            playerName={session.user.name || name}
             playerScore={userPoints ?? null}
             opponentName={opponent ?? ''}
             opponentScore={opponentPoints ?? null}
@@ -188,7 +229,7 @@ function App() {
       case 'ended':
         return (
           <EndedScreen
-            isWinner={winner === name}
+            isWinner={winner === (session.user.name || name)}
             playerScore={userPoints ?? 0}
             opponentScore={opponentPoints ?? 0}
             onPlayAgain={reset}
@@ -200,7 +241,22 @@ function App() {
     }
   }
 
-  return renderScreen()
+  return (
+    <>
+      <AuthHeader>
+        <div className="flex-1" />
+      </AuthHeader>
+      {renderGameScreen()}
+    </>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  )
 }
 
 export default App

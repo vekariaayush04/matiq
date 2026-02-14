@@ -9,11 +9,26 @@ bun install
 bun dev  # Runs on http://localhost:3000
 ```
 
+## Prerequisites
+
+- PostgreSQL database
+- Create `.env` from `.env.example`:
+  ```bash
+  cp .env.example .env
+  ```
+
 ## Project Structure
 
 ```
 src/
 ├── index.ts           # Main server entry, WebSocket handler
+├── auth.ts            # Better Auth configuration
+├── db/
+│   ├── index.ts       # Drizzle database instance
+│   ├── schema.ts      # Database schema (users, sessions, accounts)
+│   └── migrations/    # Database migrations
+├── routes/
+│   └── auth.ts        # Auth API routes
 ├── game/
 │   └── game.ts        # Game class with core game logic
 ├── Question/
@@ -23,6 +38,31 @@ src/
 │   └── gameStatus.ts      # Game status constants
 └── types/
     └── operator.ts    # Operator types for questions
+```
+
+## Authentication
+
+Uses [Better Auth](https://www.better-auth.com/) with:
+
+- **Database:** PostgreSQL via Drizzle ORM
+- **Providers:** Email/password, Google OAuth
+- **Session:** JWT-based sessions
+
+### Environment Variables
+
+```env
+DATABASE_URL=postgresql://user:pass@localhost:5432/matiks
+BETTER_AUTH_SECRET=your-secret-key
+BETTER_AUTH_URL=http://localhost:3000
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+```
+
+### Database Setup
+
+```bash
+bun run db:push    # Create tables
+bun run db:studio  # Open Drizzle Studio (optional)
 ```
 
 ## Game Configuration
@@ -100,5 +140,7 @@ class Game {
 
 - Uses Bun as the runtime
 - Hono framework for HTTP/WebSocket
+- Better Auth for authentication
+- Drizzle ORM with PostgreSQL for data persistence
 - Auto-reload enabled in dev mode (`bun run --hot`)
 - Games are stored in-memory and removed after completion
