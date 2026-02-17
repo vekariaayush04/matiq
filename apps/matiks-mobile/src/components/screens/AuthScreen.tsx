@@ -1,40 +1,39 @@
 /**
- * AuthScreen Component
+ * AuthScreen Component - Google Sign-in
  */
 
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Logo, Card, Button } from '../ui';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Logo, Card } from '../ui';
 import { COLORS } from '../../constants';
 
 interface AuthScreenProps {
-  onAuthSuccess: () => void;
-  onSkipAuth: () => void;
+  onSignIn: () => void;
+  isLoading?: boolean;
 }
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({
-  onAuthSuccess,
-  onSkipAuth,
-}) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({ onSignIn, isLoading }) => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <Logo />
 
         <Card style={styles.card}>
-          <Text style={styles.title}>Welcome to Matiks</Text>
+          <Text style={styles.title}>Matiks</Text>
           <Text style={styles.subtitle}>
-            Challenge other players in real-time math duels
+            Real-time math duels
           </Text>
 
-          <Button
-            title="Sign in with Google"
-            onPress={onAuthSuccess}
-            style={styles.button}
-          />
-
-          <TouchableOpacity onPress={onSkipAuth}>
-            <Text style={styles.skipText}>Continue as Guest</Text>
+          <TouchableOpacity
+            style={[styles.googleButton, isLoading && styles.buttonDisabled]}
+            onPress={onSignIn}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.googleButtonText}>Continue with Google</Text>
+            )}
           </TouchableOpacity>
         </Card>
       </View>
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '700',
     color: COLORS.text,
     marginBottom: 8,
@@ -67,15 +66,24 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
-  button: {
+  googleButton: {
+    backgroundColor: '#4285f4',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
     width: '100%',
-    marginBottom: 16,
+    alignItems: 'center',
+    minHeight: 50,
   },
-  skipText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
+  googleButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
 });
 

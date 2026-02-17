@@ -6,13 +6,20 @@ const authApp = new Hono()
 
 // Enable CORS for auth routes
 authApp.use('/*', cors({
-  origin: ['http://localhost:5173'],
+  origin: (origin) => origin || '*',
   credentials: true,
 }))
 
 // Better-auth routes
 authApp.all('/api/auth/*', async (c) => {
-  const response = await auth.handler(c.req.raw)
+  // Get the request and potentially add origin from expo-origin header
+  const req = c.req.raw.clone()
+  const expoOrigin = c.req.header('expo-origin')
+  if (expoOrigin && !req.headers.get('origin')) {
+    req.headers.set('origin', expoOrigin)
+  }
+
+  const response = await auth.handler(req)
 
   // Build headers object
   const headers: Record<string, string> = {}
@@ -24,11 +31,19 @@ authApp.all('/api/auth/*', async (c) => {
     }
   })
 
-  // Handle redirect - change port from 3000 to 5173
-  const location = response.headers.get('location')
-  if (location && location.includes('localhost:3000')) {
-    const newLocation = location.replace('localhost:3000', 'localhost:5173')
-    headers['Location'] = newLocation
+  // Handle redirect - change port from 3000 to 5173 for web
+  let location = response.headers.get('location')
+  if (location) {
+    // For mobile OAuth, redirect to the matiks:// scheme
+    if (location.includes('callback') || location.includes('sign-in')) {
+      // Keep the full URL as-is for OAuth flow
+      // The expoClient plugin will handle the redirect
+    }
+    // Replace localhost:3000 with localhost:5173 for web
+    if (location.includes('localhost:3000')) {
+      location = location.replace('localhost:3000', 'localhost:5173')
+    }
+    headers['Location'] = location
   }
 
   return new Response(response.body, {

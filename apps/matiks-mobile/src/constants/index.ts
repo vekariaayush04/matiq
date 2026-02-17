@@ -1,17 +1,9 @@
 // Constants for Matiks Mobile
 
-// API Configuration
-// Update this to your computer's IP address for physical devices
-export const API_BASE_URL = 'http://192.168.0.69:3000';
-export const WS_URL = 'ws://192.168.0.69:3000/ws';
-
-// For Android emulator, use:
-// export const API_BASE_URL = 'http://10.0.2.2:3000';
-// export const WS_URL = 'ws://10.0.2.2:3000/ws';
-
-// For iOS simulator, use:
-// export const API_BASE_URL = 'http://localhost:3000';
-// export const WS_URL = 'ws://localhost:3000/ws';
+// API Configuration - uses environment variables
+// Set these in .env file or use defaults for development
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.0.69:3000';
+export const WS_URL = process.env.EXPO_PUBLIC_WS_URL || 'ws://192.168.0.69:3000/ws';
 
 // Game Configuration
 export const GAME_DURATION_SECONDS = 60;

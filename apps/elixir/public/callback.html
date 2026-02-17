@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Signing in...</title>
+  <meta http-equiv="refresh" content="5;url=matiks://" />
+</head>
+<body>
+  <h1>Sign in successful!</h1>
+  <p>Redirecting you back to the app...</p>
+  <script>
+    // Try to close the window or redirect
+    if (window.opener) {
+      window.opener.postMessage('auth-complete', '*');
+    }
+    // Fallback: try to open the app
+    setTimeout(() => {
+      window.location.href = 'matiks://';
+    }, 2000);
+  </script>
+</body>
+</html>

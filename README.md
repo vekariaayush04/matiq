@@ -147,3 +147,37 @@ npm run dev  # http://localhost:5173
 ## Future Enhancements
 
 See GitHub Issues for planned features.
+
+---
+
+## Mobile App (matiks-mobile)
+
+The mobile app is built with Expo React Native.
+
+### Setup
+
+1. **Start Cloudflare Tunnel (required for OAuth):**
+   ```bash
+   cloudflared tunnel --config ~/.cloudflared/config.yml run
+   ```
+
+2. **Start Backend:**
+   ```bash
+   cd apps/elixir
+   bun dev
+   ```
+
+3. **Start Mobile:**
+   ```bash
+   cd apps/matiks-mobile
+   bunx expo start
+   ```
+
+### Configuration
+
+- OAuth requires Google Cloud credentials in `apps/elixir/.env`
+- See `docs/OAUTH_TUNNEL_SETUP.md` for detailed tunnel setup
+
+## Changelog
+
+Daily updates are stored in `changelog/` directory.

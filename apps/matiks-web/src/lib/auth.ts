@@ -1,7 +1,9 @@
 import { createAuthClient } from 'better-auth/react'
 
+const AUTH_URL = import.meta.env.VITE_AUTH_URL || 'https://matiks.pgstay.in'
+
 export const authClient = createAuthClient({
-  baseURL: 'http://localhost:3000',
+  baseURL: AUTH_URL,
   basePath: '/api/auth',
   sessionOptions: {
     refetchOnWindowFocus: true,

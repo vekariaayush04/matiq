@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { GameState, GameMessage } from '../types'
+import { WS_URL } from '../constants'
 
 // WebSocket event types
 const EVENT_TYPES = {
@@ -40,7 +41,7 @@ export const useGameSocket = (playerName: string, userId?: string): UseGameSocke
     // Prevent duplicate connections
     if (wsRef.current?.readyState === WebSocket.OPEN) return
 
-    const ws = new WebSocket(`ws://localhost:3000/ws`)
+    const ws = new WebSocket(`wss://${WS_URL}/ws`)
 
     ws.onopen = () => {
       // Join matchmaking queue with user info

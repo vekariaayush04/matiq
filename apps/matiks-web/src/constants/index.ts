@@ -22,4 +22,4 @@ export const SCORE_ANIMATION_MS = 300
 export const STORAGE_KEY_NAME = 'matiks_player_name'
 
 /** WebSocket connection URL environment variable */
-export const WS_URL = import.meta.env.API_BASE_URL || 'localhost:3000'
+export const WS_URL = import.meta.env.VITE_WS_URL || 'matiks.pgstay.in'
